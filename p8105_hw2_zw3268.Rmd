@@ -1,0 +1,16 @@
+---
+title: "Homework 2"
+author: "Zeheng Wei"
+date: 2026-09-30
+output: github_document
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+# Problem 1
+
+# Problem 2
+
+# Problem 3
