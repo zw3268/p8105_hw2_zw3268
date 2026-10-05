@@ -55,6 +55,31 @@ number_of_retained_variables =
 
 Each row describes a NYC subway entrance or exit, so stations may appear more than once. Variables include the line, station name and location, routes, entry permission, vending, entrance type, and ADA compliance. I cleaned the column names, kept the requested variables, converted entry from YES/NO to TRUE/FALSE, and read Route8–Route11 as character columns for consistent route types. The cleaned data have `r number_of_entrance_exit_records` rows and `r number_of_retained_variables` columns. They are not tidy yet because routes are spread across 11 columns instead of one variable.
 
+### Distinct stations
+
+```{r count_distinct_subway_stations}
+number_of_distinct_stations =
+  nyc_subway_entrance_exit_data |>
+  distinct(line, station_name) |>
+  pull(station_name) |>
+  length()
+```
+
+There are `r number_of_distinct_stations` distinct stations, identified using both line and station name.
+
+### ADA-compliant stations
+
+```{r count_ada_compliant_subway_stations}
+number_of_ada_compliant_stations =
+  nyc_subway_entrance_exit_data |>
+  filter(ada == TRUE) |>
+  distinct(line, station_name) |>
+  pull(station_name) |>
+  length()
+```
+
+For these stations, `r number_of_ada_compliant_stations` are ADA compliant.
+
 # Problem 2
 
 # Problem 3
