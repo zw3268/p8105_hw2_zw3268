@@ -80,6 +80,57 @@ number_of_ada_compliant_stations =
 
 For these stations, `r number_of_ada_compliant_stations` are ADA compliant.
 
+### Entry without vending
+
+```{r calculate_entry_proportion_without_vending}
+number_of_entrances_exits_without_vending =
+  nyc_subway_entrance_exit_data |>
+  filter(vending == "NO") |>
+  pull(entry) |>
+  length()
+
+number_of_entrances_exits_without_vending_allowing_entry =
+  nyc_subway_entrance_exit_data |>
+  filter(vending == "NO", entry == TRUE) |>
+  pull(entry) |>
+  length()
+
+proportion_allowing_entry_without_vending =
+  number_of_entrances_exits_without_vending_allowing_entry /
+  number_of_entrances_exits_without_vending
+```
+
+Among the `r number_of_entrances_exits_without_vending` entrances and exits without vending, `r number_of_entrances_exits_without_vending_allowing_entry` allow entry, giving a proportion of `r round(proportion_allowing_entry_without_vending, digits = 2)`.
+
+### Routes and A train stations
+
+```{r reformat_routes_and_count_a_train_stations}
+nyc_subway_route_data =
+  nyc_subway_entrance_exit_data |>
+  pivot_longer(
+    route1:route11,
+    names_to = "route_number",
+    names_prefix = "route",
+    values_to = "route_name") |>
+  drop_na(route_name)
+
+number_of_a_train_stations =
+  nyc_subway_route_data |>
+  filter(route_name == "A") |>
+  distinct(line, station_name) |>
+  pull(station_name) |>
+  length()
+
+number_of_ada_compliant_a_train_stations =
+  nyc_subway_route_data |>
+  filter(route_name == "A", ada == TRUE) |>
+  distinct(line, station_name) |>
+  pull(station_name) |>
+  length()
+```
+
+I reshaped the routes into `route_number` and `route_name` and removed empty slots. Using line and station name to identify distinct stations, the A train serves `r number_of_a_train_stations` stations, of which `r number_of_ada_compliant_a_train_stations` are ADA compliant.
+
 # Problem 2
 
 # Problem 3
