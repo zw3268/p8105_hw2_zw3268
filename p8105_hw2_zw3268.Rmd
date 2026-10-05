@@ -131,6 +131,55 @@ number_of_ada_compliant_a_train_stations =
 
 I reshaped the routes into `route_number` and `route_name` and removed empty slots. Using line and station name to identify distinct stations, the A train serves `r number_of_a_train_stations` stations, of which `r number_of_ada_compliant_a_train_stations` are ADA compliant.
 
+
+
 # Problem 2
+
+### Import and clean Mr. Trash Wheel data
+
+```{r import_and_clean_mr_trash_wheel_data}
+mr_trash_wheel_data =
+  readxl::read_excel(
+    "./data/202509 Trash Wheel Collection Data.xlsx", 
+    sheet = "Mr. Trash Wheel", 
+    range = "A2:N709") |>
+  janitor::clean_names() |>
+  drop_na(dumpster) |>
+  mutate(
+    year = as.integer(year),
+    sports_balls = as.integer(round(sports_balls, digits = 0)),
+    trash_wheel = "Mr. Trash Wheel")
+```
+
+### Import and clean Professor and Gwynnda data
+
+```{r import_and_clean_professor_and_gwynnda_data}
+professor_trash_wheel_data =
+  readxl::read_excel(
+    "./data/202509 Trash Wheel Collection Data.xlsx", 
+    sheet = "Professor Trash Wheel", 
+    range = "A2:M134") |>
+  janitor::clean_names() |>
+  drop_na(dumpster) |>
+  mutate(
+    year = as.integer(year),
+    trash_wheel = "Professor Trash Wheel")
+
+gwynnda_trash_wheel_data =
+  readxl::read_excel(
+    "./data/202509 Trash Wheel Collection Data.xlsx", sheet = "Gwynns Falls Trash Wheel", range = "A2:L351") |>
+  janitor::clean_names() |>
+  drop_na(dumpster) |>
+  mutate(
+    year = as.integer(year),
+    trash_wheel = "Gwynnda")
+```
+
+
+
+
+
+
+
 
 # Problem 3
