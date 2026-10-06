@@ -194,7 +194,29 @@ number_of_dumpster_records =
 
 The combined dataset contains `r number_of_dumpster_records` dumpster records from Mr. Trash Wheel, Professor Trash Wheel, and Gwynnda. Variables include collection date, weight in tons, volume in cubic yards, homes powered, and trash item counts. I excluded totals and non-data entries, cleaned column names, and kept rows with a dumpster number. I rounded Mr. Trash Wheel's sports ball counts and converted them to integers, standardized `year`, and added `trash_wheel` to identify the source. Missing or unrecorded measurements remain `NA`.
 
+### Total weight collected
 
+```{r calculate_total_weight}
+total_weight =
+  trash_wheel_collection_data |>
+  filter(trash_wheel == "Professor Trash Wheel") |>
+  pull(weight_tons) |>
+  sum()
+```
+
+Across the available records, Professor Trash Wheel collected `r round(total_weight, digits = 2)` tons of trash.
+
+### Cigarette butts collected by Gwynnda
+
+```{r calculate_total_cigarette_butts}
+total_cigarette_butts =
+  trash_wheel_collection_data |>
+  filter(trash_wheel == "Gwynnda", year == 2022, month == "June") |>
+  pull(cigarette_butts) |>
+  sum()
+```
+
+Gwynnda collected `r as.integer(total_cigarette_butts)` cigarette butts in June 2022.
 
 
 
