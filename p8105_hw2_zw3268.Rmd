@@ -314,3 +314,8 @@ number_of_participants =
 number_of_missing_amyloid_ratios =
   sum(is.na(mci_amyloid_data$amyloid_42_40_ratio))
 ```
+
+### Amyloid dataset description
+
+I skipped the description row, cleaned column names, renamed `study_id` to `id`, and treated `NA` and `Na` as missing. Using `pivot_longer()`, I reshaped the visit columns into time (0, 2, 4, 6, and 8 years since baseline) and amyloid 42/40 ratio variables. The tidy dataset contains `r number_of_amyloid_visit_records` participant-visit records from `r number_of_participants` participants, with `r number_of_missing_amyloid_ratios` missing ratios retained as `NA`.
+
