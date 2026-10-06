@@ -175,7 +175,24 @@ gwynnda_trash_wheel_data =
     trash_wheel = "Gwynnda")
 ```
 
+### Combine and check the data
 
+```{r combine_and_check_trash_wheel_data}
+trash_wheel_collection_data =
+  bind_rows(
+    mr_trash_wheel_data,
+    professor_trash_wheel_data,
+    gwynnda_trash_wheel_data)
+
+trash_wheel_collection_data
+
+number_of_dumpster_records =
+  length(trash_wheel_collection_data$dumpster)
+```
+
+### Dataset description
+
+The combined dataset contains `r number_of_dumpster_records` dumpster records from Mr. Trash Wheel, Professor Trash Wheel, and Gwynnda. Variables include collection date, weight in tons, volume in cubic yards, homes powered, and trash item counts. I excluded totals and non-data entries, cleaned column names, and kept rows with a dumpster number. I rounded Mr. Trash Wheel's sports ball counts and converted them to integers, standardized `year`, and added `trash_wheel` to identify the source. Missing or unrecorded measurements remain `NA`.
 
 
 
