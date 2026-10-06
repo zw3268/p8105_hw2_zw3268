@@ -276,3 +276,41 @@ female_apoe4_proportion =
 I skipped the description row, cleaned column names, renamed `current_age` to `baseline_age`, and converted sex and APOE4 status to labeled factors. I treated `.` as missing onset age and retained these participants because they remained MCI free throughout follow-up. Each row represents one participant, with baseline demographics, education, and MCI onset age.
 
 The original baseline file contains `r number_of_recruited_participants` participants. I excluded `r number_of_excluded_participants` whose MCI onset age was at or before their baseline age, leaving `r number_of_eligible_participants` eligible participants. Among this eligible group, `r number_developed_mci` developed MCI during follow-up, and the average baseline age was `r round(average_baseline_age, digits = 2)` years. Of the `r number_of_female_participants` women, `r number_of_female_apoe4_carriers` were APOE4 carriers, giving a proportion of `r round(female_apoe4_proportion, digits = 2)`.
+
+### Import and tidy amyloid data
+
+```{r import_and_tidy_mci_amyloid_data, message = FALSE, warning = FALSE}
+mci_amyloid_data =
+  read_csv(
+    file = "./data/data_mci/mci_amyloid.csv",
+    skip = 1,
+    na = c(".", "NA", "Na", "")) |>
+  janitor::clean_names() |>
+  rename(id = study_id) |>
+  pivot_longer(
+    baseline:time_8,
+    names_to = "years_since_baseline",
+    values_to = "amyloid_42_40_ratio") |>
+  mutate(
+    years_since_baseline = case_match(
+      years_since_baseline,
+      "baseline" ~ 0,
+      "time_2" ~ 2,
+      "time_4" ~ 4,
+      "time_6" ~ 6,
+      "time_8" ~ 8))
+
+mci_amyloid_data
+
+number_of_amyloid_visit_records =
+  length(mci_amyloid_data$id)
+
+number_of_participants =
+  mci_amyloid_data |>
+  distinct(id) |>
+  pull(id) |>
+  length()
+
+number_of_missing_amyloid_ratios =
+  sum(is.na(mci_amyloid_data$amyloid_42_40_ratio))
+```
