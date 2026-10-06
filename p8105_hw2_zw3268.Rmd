@@ -218,7 +218,61 @@ total_cigarette_butts =
 
 Gwynnda collected `r as.integer(total_cigarette_butts)` cigarette butts in June 2022.
 
-
-
-
 # Problem 3
+
+### Import and clean baseline demographics
+
+```{r import_and_clean_mci_baseline_data, message = FALSE, warning = FALSE}
+mci_baseline_imported_data =
+  read_csv(
+    file = "./data/data_mci/MCI_baseline.csv",
+    skip = 1,
+    na = c(".", "NA", "")) |>
+  janitor::clean_names() |>
+  rename(baseline_age = current_age) |>
+  mutate(
+    sex = case_match(sex, 0 ~ "female", 1 ~ "male"),
+    sex = as.factor(sex),
+    apoe4 = case_match(apoe4, 0 ~ "non-carrier", 1 ~ "carrier"),
+    apoe4 = as.factor(apoe4))
+
+mci_baseline_data =
+  mci_baseline_imported_data |>
+  filter(is.na(age_at_onset) | age_at_onset > baseline_age)
+```
+
+### Baseline participant statistics
+
+```{r calculate_mci_baseline_statistics}
+mci_baseline_data
+
+number_of_recruited_participants =
+  length(mci_baseline_imported_data$id)
+
+number_of_eligible_participants =
+  length(mci_baseline_data$id)
+
+number_of_excluded_participants =
+  number_of_recruited_participants - number_of_eligible_participants
+
+number_developed_mci =
+  sum(!is.na(mci_baseline_data$age_at_onset))
+
+average_baseline_age =
+  mean(mci_baseline_data$baseline_age)
+
+number_of_female_participants =
+  sum(mci_baseline_data$sex == "female")
+
+number_of_female_apoe4_carriers =
+  sum(mci_baseline_data$sex == "female" & mci_baseline_data$apoe4 == "carrier")
+
+female_apoe4_proportion =
+  number_of_female_apoe4_carriers / number_of_female_participants
+```
+
+### Baseline data description and results
+
+I skipped the description row, cleaned column names, renamed `current_age` to `baseline_age`, and converted sex and APOE4 status to labeled factors. I treated `.` as missing onset age and retained these participants because they remained MCI free throughout follow-up. Each row represents one participant, with baseline demographics, education, and MCI onset age.
+
+The original baseline file contains `r number_of_recruited_participants` participants. I excluded `r number_of_excluded_participants` whose MCI onset age was at or before their baseline age, leaving `r number_of_eligible_participants` eligible participants. Among this eligible group, `r number_developed_mci` developed MCI during follow-up, and the average baseline age was `r round(average_baseline_age, digits = 2)` years. Of the `r number_of_female_participants` women, `r number_of_female_apoe4_carriers` were APOE4 carriers, giving a proportion of `r round(female_apoe4_proportion, digits = 2)`.
