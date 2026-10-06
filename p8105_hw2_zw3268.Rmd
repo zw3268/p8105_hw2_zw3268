@@ -319,3 +319,63 @@ number_of_missing_amyloid_ratios =
 
 I skipped the description row, cleaned column names, renamed `study_id` to `id`, and treated `NA` and `Na` as missing. Using `pivot_longer()`, I reshaped the visit columns into time (0, 2, 4, 6, and 8 years since baseline) and amyloid 42/40 ratio variables. The tidy dataset contains `r number_of_amyloid_visit_records` participant-visit records from `r number_of_participants` participants, with `r number_of_missing_amyloid_ratios` missing ratios retained as `NA`.
 
+### Check participants appearing in only one dataset
+
+```{r check_unmatched_mci_participants}
+participants_only_in_baseline_data =
+  anti_join(mci_baseline_data, mci_amyloid_data, by = "id") |>
+  distinct(id)
+
+participants_only_in_amyloid_data =
+  anti_join(mci_amyloid_data, mci_baseline_data, by = "id") |>
+  distinct(id)
+
+amyloid_participants_without_original_baseline_data =
+  anti_join(mci_amyloid_data, mci_baseline_imported_data, by = "id") |>
+  distinct(id)
+
+number_of_participants_only_in_baseline_data =
+  length(participants_only_in_baseline_data$id)
+
+number_of_participants_only_in_amyloid_data =
+  length(participants_only_in_amyloid_data$id)
+
+number_of_amyloid_participants_without_original_baseline_data =
+  length(amyloid_participants_without_original_baseline_data$id)
+
+number_of_excluded_participants_in_amyloid_data =
+  number_of_participants_only_in_amyloid_data -
+  number_of_amyloid_participants_without_original_baseline_data
+
+participants_only_in_baseline_data
+print(participants_only_in_amyloid_data, n = 20)
+```
+
+### Participant matching findings
+
+Comparing the amyloid data with the eligible baseline dataset, `r number_of_participants_only_in_baseline_data` participants appear only in baseline and `r number_of_participants_only_in_amyloid_data` appear only in amyloid. Of the amyloid-only group, `r number_of_excluded_participants_in_amyloid_data` were excluded earlier because they already had MCI at baseline. Comparing with the original baseline file shows that the remaining `r number_of_amyloid_participants_without_original_baseline_data` participants have no baseline record. The source files do not explain the remaining mismatches.
+
+### Combine baseline and amyloid data
+
+```{r combine_mci_baseline_and_amyloid_data}
+mci_baseline_amyloid_data =
+  inner_join(mci_baseline_data, mci_amyloid_data, by = "id")
+
+mci_baseline_amyloid_data
+
+number_of_participants_in_combined_mci_data =
+  mci_baseline_amyloid_data |>
+  distinct(id) |>
+  pull(id) |>
+  length()
+
+number_of_visit_records_in_combined_mci_data =
+  length(mci_baseline_amyloid_data$id)
+
+number_of_variables_in_combined_mci_data =
+  length(names(mci_baseline_amyloid_data))
+```
+
+### Combined dataset description
+
+I joined the eligible baseline and amyloid datasets by `id`, keeping participants present in both. The result contains `r number_of_visit_records_in_combined_mci_data` participant-visit records from `r number_of_participants_in_combined_mci_data` participants and `r number_of_variables_in_combined_mci_data` variables. Each row is one participant at one visit, with baseline demographics, MCI onset age, years since baseline, and the amyloid ratio. Baseline information is repeated across visits, and missing amyloid ratios remain as `NA`.
